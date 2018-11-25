@@ -54,7 +54,10 @@ Router::scope('/', function (RouteBuilder $routes) {
    */
   $routes->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
 
-  $routes->connect('/login', ['controller' => 'Relawan', 'action' => 'login']);
+  $routes->connect('/relawan/login', ['controller' => 'Relawan', 'action' => 'login']);
+  $routes->connect('/relawan/profile/:id', ['controller' => 'Relawan', 'action' => 'profile'])
+    ->setPass(['id'])
+    ->setPatterns(['id' => '[0-9]+']);
 
   /**
    * ...and connect the rest of 'Pages' controller's URLs.
