@@ -59,6 +59,8 @@ Router::scope('/', function (RouteBuilder $routes) {
     ->setPass(['id'])
     ->setPatterns(['id' => '[0-9]+']);
 
+  $routes->connect('/master-data', ['controller' => 'MasterData', 'action' => 'index']);
+
   /**
    * ...and connect the rest of 'Pages' controller's URLs.
    */

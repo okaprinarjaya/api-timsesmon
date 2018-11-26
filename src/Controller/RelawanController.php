@@ -62,8 +62,7 @@ class RelawanController extends AppController
           ];
         }
 
-        $this->response = $this->response->withStatus(200)
-          ->withType('json');
+        $this->response = $this->response->withStatus(200)->withType('json');
       }
 
       $this->set(compact('response'));
@@ -84,6 +83,19 @@ class RelawanController extends AppController
       $relawan_profile = null;
       $status_code = null;
       $request_data['created_by'] = '8b16d313-9804-473c-8e68-88b6b5122c2a';
+
+      if (
+        isset($request_data['image_base64_encoded']) &&
+        !empty($request_data['image_base64_encoded'])
+      ) {
+        $imgname = $this->saveImageBase64Encoded($request_data['image_base64_encoded'], $id);
+        if ($imgname) {
+          unset($request_data['image_base64_encoded']);
+          $request_data['photo_profile'] = $imgname;
+        }
+      } else {
+        unset($request_data['photo_profile']);
+      }
 
       if ($relawan_profile_query->count() > 0) {
         $relawan_profile = $relawan_profile_query->first();
@@ -125,6 +137,20 @@ class RelawanController extends AppController
 
       $this->set(compact('response'));
     }
+  }
+
+  private function saveImageBase64Encoded($base64_str, $relawan_id)
+  {
+    $base64_str = trim($base64_str);
+    $base64_str = str_replace('data:image/png;base64,', '', $base64_str);
+    $base64_str = str_replace(' ', '+', $base64_str);
+    $image_decoded = base64_decode($base64_str);
+    $imgname = $relawan_id . '.png';
+    $upload_path = WWW_ROOT . 'img' . DS . 'photo_profile' . DS . $imgname;
+    if (file_put_contents($upload_path, $image_decoded)) {
+      return $imgname;
+    }
+    return null;
   }
 
   private function arrangeRelawanProfileResponse($relawan_profile, $relawan)
